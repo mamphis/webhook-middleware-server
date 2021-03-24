@@ -1,41 +1,24 @@
 {
   "compilerOptions": {
-      "experimentalDecorators": true,
-      // Target latest version of ECMAScript.
-      "target": "es6",
-      // path to output directory
-      "outDir": "./dist",
-      // enable strict null checks as a best practice
-      "strictNullChecks": true,
-      "strictPropertyInitialization": false,
-      // Search under node_modules for non-relative imports.
-      "moduleResolution": "node",
-      // Process & infer types from .js files.
-      "allowJs": false,
-      // Don't emit; allow Babel to transform files.
-      "noEmit": false,
-      // Enable strictest settings like strictNullChecks & noImplicitAny.
-      "strict": true,
-      // Import non-ES modules as default imports.
-      "esModuleInterop": true,
-      // use typescript to transpile jsx to js
-      "baseUrl": "./src",
-      "module": "commonjs",
-      "removeComments": true,
-      "alwaysStrict": true,
-      "allowUnreachableCode": false,
-      "noImplicitAny": true,
-      "noImplicitThis": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "noImplicitReturns": true,
-      "noFallthroughCasesInSwitch": true,
-      "forceConsistentCasingInFileNames": true,
-      "incremental": false,
-      "importHelpers": true,
-      "typeRoots": [
-        "src/@types",
-        "node_modules/@types"
-      ]
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "alwaysStrict": true,
+    "allowUnreachableCode": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
   }
 }
