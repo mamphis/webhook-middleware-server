@@ -15,5 +15,6 @@ export const DEFAULT_LIMIT = '10';
     ],
     controllers: [PublishersController],
     providers: [PublishersService],
+    exports: [PublishersService],
 })
 export class PublishersModule {}

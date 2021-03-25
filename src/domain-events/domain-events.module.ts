@@ -11,5 +11,6 @@ import { DomainEvent, DomainEventSchema } from './schemas/domain-event.schema';
     ],
     controllers: [],
     providers: [DomainEventsService],
+    exports: [DomainEventsService],
 })
 export class DomainEventsModule {}

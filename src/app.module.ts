@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DomainEventsModule } from './domain-events/domain-events.module';
 import { PublishersModule } from './publishers/publishers.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         PublishersModule,
         WebhooksModule,
         DomainEventsModule,
+        SubscribersModule,
         EventEmitterModule.forRoot(),
     ],
     controllers: [AppController],

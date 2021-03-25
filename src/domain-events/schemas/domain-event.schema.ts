@@ -1,20 +1,37 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import {
+    Prop,
+    Schema as NestMongooseSchema,
+    SchemaFactory,
+} from '@nestjs/mongoose';
+import { Document, Schema } from 'mongoose';
 
 export type DomainEventDocument = DomainEvent & Document;
 
-enum DomainEventStatus {
+export enum DomainEventStatus {
     Success = 'success',
     Error = 'error',
 }
 
-enum DomainEventType {
+export enum DomainEventType {
     Received = 'received_message',
     Sent = 'sent_message',
 }
 
-@Schema({ versionKey: false })
+@NestMongooseSchema({ versionKey: false })
 export class DomainEvent {
+    constructor(
+        type: string,
+        status: string,
+        payload: unknown,
+        publisherId: string | null = null,
+        subscriberId: string | null = null,
+    ) {
+        this.type = type;
+        this.status = status;
+        this.payload = payload;
+        this.publisherId = publisherId;
+        this.subscriberId = subscriberId;
+    }
     @Prop()
     id: string;
 
@@ -23,6 +40,15 @@ export class DomainEvent {
 
     @Prop({ required: true, enum: DomainEventStatus })
     status: string;
+
+    @Prop({ required: true, type: Schema.Types.Mixed })
+    payload: unknown;
+
+    @Prop({ required: false })
+    publisherId: string | null;
+
+    @Prop({ required: false })
+    subscriberId: string | null;
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
