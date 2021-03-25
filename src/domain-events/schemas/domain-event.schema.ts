@@ -15,10 +15,10 @@ enum DomainEventType {
 
 @Schema({ versionKey: false })
 export class DomainEvent {
-    @Prop({ type: 'uuid' })
+    @Prop()
     id: string;
 
-    @Prop({ required: true, type: 'string', enum: DomainEventType })
+    @Prop({ required: true, enum: DomainEventType })
     type: string;
 
     @Prop({ required: true, enum: DomainEventStatus })

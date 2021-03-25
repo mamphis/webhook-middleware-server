@@ -1,24 +1,47 @@
 {
   "compilerOptions": {
+    /* Basic Options */
+    "target": "es2018",
     "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
+    "jsx": "react",
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "alwaysStrict": true,
+    "rootDir": "./src",
+    "removeComments": true,
+    "isolatedModules": true,
+    "importHelpers": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+
+    /* Additional Checks */
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+
+    /* Source Map Options */
+    "inlineSourceMap": true,
+
+    /* Experimental Options */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "skipLibCheck": true,
     "allowUnreachableCode": false,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-  }
+    "strictPropertyInitialization": false
+
+    /* Compiler Plugins */
+    // "plugins": [{ "name": "typescript-tslint-plugin" }]
+  },
+  "include": ["src/**/*.ts"]
 }
