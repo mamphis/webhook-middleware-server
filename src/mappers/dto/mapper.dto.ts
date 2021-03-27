@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class MapperDto {
-    @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    readonly format: string;
+    readonly format: unknown;
 }

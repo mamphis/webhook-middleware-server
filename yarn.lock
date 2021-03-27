@@ -1210,6 +1210,13 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
+JSONPath@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/JSONPath/-/JSONPath-0.10.0.tgz#44959bdd94e3641858e7f2147d93c732f3505b1c"
+  integrity sha1-RJWb3ZTjZBhY5/IUfZPHMvNQWxw=
+  dependencies:
+    underscore "*"
+
 abab@^2.0.3:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.5.tgz#c0b678fb32d60fc1219c784d6a826fe385aeb79a"
@@ -3912,6 +3919,13 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+jsonpath-object-transform@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/jsonpath-object-transform/-/jsonpath-object-transform-1.0.4.tgz#adbb35ec0b8e8a74efed896bd07ad6a4945198ff"
+  integrity sha1-rbs17AuOinTv7Ylr0HrWpJRRmP8=
+  dependencies:
+    JSONPath "^0.10.0"
+
 jsprim@^1.2.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/jsprim/-/jsprim-1.4.1.tgz#313e66bc1e5cc06e438bc1b7499c2e5c56acb6a2"
@@ -5951,6 +5965,11 @@ typescript@^4.0.5:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.5.tgz#123a3b214aaff3be32926f0d8f1f6e704eb89a72"
   integrity sha512-6OSu9PTIzmn9TCDiovULTnET6BgXtDYL4Gg4szY+cGsc3JP1dQL8qvE8kShTRx1NIw4Q9IBHlwODjkjWEtMUyA==
+
+underscore@*:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.12.1.tgz#7bb8cc9b3d397e201cf8553336d262544ead829e"
+  integrity sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==
 
 union-value@^1.0.0:
   version "1.0.1"

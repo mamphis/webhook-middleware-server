@@ -1,15 +1,19 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import {
+    Prop,
+    Schema as NestMongooseSchema,
+    SchemaFactory,
+} from '@nestjs/mongoose';
+import { Document, Schema } from 'mongoose';
 
 export type MapperDocument = Mapper & Document;
 
-@Schema({ versionKey: false })
+@NestMongooseSchema({ versionKey: false })
 export class Mapper {
     @Prop()
     id: string;
 
-    @Prop({ required: true })
-    format: string;
+    @Prop({ required: true, type: Schema.Types.Mixed })
+    format: unknown;
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;

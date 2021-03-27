@@ -9,10 +9,10 @@ export class SubscribedPublisher {
     id: string;
 
     @Prop({ required: true })
-    mapperId: string;
+    publisherId: string;
 
     @Prop({ required: true })
-    publisherId: string;
+    mapperId: string;
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;

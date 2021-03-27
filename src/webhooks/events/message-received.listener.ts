@@ -5,14 +5,31 @@ import {
     DomainEvent,
     DomainEventType,
 } from 'src/domain-events/schemas/domain-event.schema';
+import { Subscriber } from 'src/subscribers/schemas/subscriber.schema';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Injectable()
 export class MessageReceivedListener {
-    constructor(private domainEventsService: DomainEventsService) {}
+    constructor(
+        private domainEventsService: DomainEventsService,
+        private subscribersService: SubscribersService,
+    ) {}
     @OnEvent(DomainEventType.Received)
     handleMessageReceivedEvent(event: DomainEvent): void {
-        this.domainEventsService.create(event).then(() => {
-            console.log(event);
-        });
+        this.domainEventsService
+            .create(event)
+            .then(() => {
+                console.log(event);
+            })
+            .then(() => {
+                this.subscribersService
+                    .findAllByPublisherId(event.publisherId)
+                    .then((subscribers: Subscriber[]) => {
+                        this.subscribersService.notifySubscribers(
+                            event,
+                            subscribers,
+                        );
+                    });
+            });
     }
 }

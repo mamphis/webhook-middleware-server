@@ -18,6 +18,9 @@ export class Subscriber {
     @Prop([{ type: SubscribedPublisherSchema }])
     subscribedTo: [SubscribedPublisher];
 
+    @Prop()
+    webhookUrl: string;
+
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
 }

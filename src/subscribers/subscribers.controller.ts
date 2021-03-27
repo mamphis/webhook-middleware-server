@@ -8,7 +8,6 @@ import {
     NotFoundException,
     Param,
     Post,
-    Put,
     Query,
 } from '@nestjs/common';
 import { SubscriberDto } from './dto/subscriber.dto';
@@ -46,13 +45,13 @@ export class SubscribersController {
         return this.subscribersService.getById(id);
     }
 
-    @Put(':id')
-    update(
-        @Param('id') id: string,
-        @Body() subscriberDto: SubscriberDto,
-    ): Promise<Subscriber> {
-        return this.subscribersService.update(id, subscriberDto);
-    }
+    // @Put(':id')
+    // update(
+    //     @Param('id') id: string,
+    //     @Body() subscriberDto: SubscriberDto,
+    // ): Promise<Subscriber> {
+    //     return this.subscribersService.update(id, subscriberDto);
+    // }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)

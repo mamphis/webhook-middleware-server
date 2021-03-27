@@ -21,7 +21,7 @@ export enum DomainEventType {
 export class DomainEvent {
     constructor(
         type: string,
-        status: string,
+        status: string | null,
         payload: unknown,
         publisherId: string | null = null,
         subscriberId: string | null = null,

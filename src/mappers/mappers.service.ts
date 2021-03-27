@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MapperDto } from './dto/mapper.dto';
 import { Mapper, MapperDocument } from './schemas/mapper.schema';
+import { jsonPathObjectTransform } from 'jsonpath-object-transform';
 
 @Injectable()
 export class MappersService {
@@ -44,5 +45,9 @@ export class MappersService {
 
     async delete(id: string): Promise<void> {
         this.mapperModel.findByIdAndRemove(id);
+    }
+
+    mapPayloadToFormat(payload: unknown, format: unknown): unknown {
+        return jsonPathObjectTransform(payload, format);
     }
 }
