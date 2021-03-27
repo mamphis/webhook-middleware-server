@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DomainEventsModule } from './domain-events/domain-events.module';
+import { MappersModule } from './mappers/mappers.module';
 import { PublishersModule } from './publishers/publishers.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
@@ -16,6 +17,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         PublishersModule,
         WebhooksModule,
         DomainEventsModule,
+        MappersModule,
         SubscribersModule,
         EventEmitterModule.forRoot(),
     ],
