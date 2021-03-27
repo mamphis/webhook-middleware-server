@@ -1,5 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import {
+    SubscribedPublisher,
+    SubscribedPublisherSchema,
+} from './subscribed-publisher.schema';
 
 export type SubscriberDocument = Subscriber & Document;
 
@@ -10,6 +14,9 @@ export class Subscriber {
 
     @Prop({ required: true })
     name: string;
+
+    @Prop([{ type: SubscribedPublisherSchema }])
+    subscribedTo: [SubscribedPublisher];
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
