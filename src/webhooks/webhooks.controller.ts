@@ -38,7 +38,6 @@ export class WebhooksController {
         ) {
             throw new NotFoundException();
         }
-        console.log(webhookPayload);
         this.eventEmitter.emit(
             DomainEventType.Received,
             new DomainEvent(

@@ -25,12 +25,16 @@ export class DomainEvent {
         payload: unknown,
         publisherId: string | null = null,
         subscriberId: string | null = null,
+        metadata: string | null = null,
+        prevEvent: DomainEvent | null = null,
     ) {
         this.type = type;
         this.status = status;
         this.payload = payload;
         this.publisherId = publisherId;
         this.subscriberId = subscriberId;
+        this.metadata = metadata;
+        this.prevEvent = prevEvent;
     }
     @Prop()
     id: string;
@@ -52,6 +56,12 @@ export class DomainEvent {
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
+
+    @Prop({ required: false, type: Schema.Types.Mixed })
+    metadata: unknown;
+
+    @Prop({ required: false, type: this })
+    prevEvent: DomainEvent;
 }
 
 export const DomainEventSchema = SchemaFactory.createForClass(DomainEvent);

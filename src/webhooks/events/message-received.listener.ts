@@ -16,20 +16,15 @@ export class MessageReceivedListener {
     ) {}
     @OnEvent(DomainEventType.Received)
     handleMessageReceivedEvent(event: DomainEvent): void {
-        this.domainEventsService
-            .create(event)
-            .then(() => {
-                console.log(event);
-            })
-            .then(() => {
-                this.subscribersService
-                    .findAllByPublisherId(event.publisherId)
-                    .then((subscribers: Subscriber[]) => {
-                        this.subscribersService.notifySubscribers(
-                            event,
-                            subscribers,
-                        );
-                    });
-            });
+        this.domainEventsService.create(event).then(() => {
+            this.subscribersService
+                .findAllByPublisherId(event.publisherId)
+                .then((subscribers: Subscriber[]) => {
+                    this.subscribersService.notifySubscribers(
+                        event,
+                        subscribers,
+                    );
+                });
+        });
     }
 }

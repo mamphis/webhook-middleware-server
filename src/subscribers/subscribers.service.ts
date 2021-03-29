@@ -1,9 +1,4 @@
-import {
-    BadRequestException,
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
@@ -15,6 +10,8 @@ import {
 import { MappersService } from 'src/mappers/mappers.service';
 import { SubscriberDto } from './dto/subscriber.dto';
 import { Subscriber, SubscriberDocument } from './schemas/subscriber.schema';
+import fetch from 'node-fetch';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class SubscribersService {
@@ -68,37 +65,68 @@ export class SubscribersService {
         return this.subscriberModel.find({ 'subscribedTo.publisherId': id });
     }
 
-    notifySubscriber(publishEvent: DomainEvent, subscriber: Subscriber): void {
+    async sendWebhook(
+        payload: unknown,
+        subscriber: Subscriber,
+    ): Promise<Response> {
+        const data = JSON.stringify(payload);
+        return fetch(subscriber.webhookUrl, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data || '', 'utf-8'),
+            },
+        });
+    }
+
+    async notifySubscriber(
+        publishEvent: DomainEvent,
+        subscriber: Subscriber,
+    ): Promise<void> {
         const mapperId = subscriber.subscribedTo.find(
             (subscribedTo) =>
                 publishEvent.publisherId === subscribedTo.publisherId,
         ).mapperId;
         try {
-            this.mappersService.getById(mapperId).then((mapper) => {
-                try {
-                    const newObject = this.mappersService.mapPayloadToFormat(
-                        publishEvent.payload,
-                        mapper.format,
-                    );
-                    //if successful
-                    this.eventEmitter.emit(
-                        DomainEventType.Sent,
-                        new DomainEvent(
+            this.mappersService.getById(mapperId).then(async (mapper) => {
+                const newObject = this.mappersService.mapPayloadToFormat(
+                    publishEvent.payload,
+                    mapper.format,
+                );
+                this.sendWebhook(newObject, subscriber).then(
+                    async (response) => {
+                        this.eventEmitter.emit(
                             DomainEventType.Sent,
-                            DomainEventStatus.Success,
-                            newObject,
-                            publishEvent.publisherId,
-                            subscriber.id,
-                        ),
-                    );
-                    console.log(newObject);
-                } catch (exception) {
-                    throw new InternalServerErrorException(
-                        'Could not transform',
-                    );
-                }
+                            new DomainEvent(
+                                DomainEventType.Sent,
+                                response.status < 300
+                                    ? DomainEventStatus.Success
+                                    : DomainEventStatus.Error,
+                                newObject,
+                                publishEvent.publisherId,
+                                subscriber.id,
+                                response.status < 300
+                                    ? null
+                                    : await response.text(),
+                                publishEvent,
+                            ),
+                        );
+                    },
+                );
             });
         } catch (exception) {
+            this.eventEmitter.emit(
+                DomainEventType.Sent,
+                new DomainEvent(
+                    DomainEventType.Sent,
+                    DomainEventStatus.Error,
+                    {},
+                    publishEvent.publisherId,
+                    subscriber.id,
+                    exception.response,
+                ),
+            );
             throw new BadRequestException(exception.response);
         }
     }
@@ -107,8 +135,8 @@ export class SubscribersService {
         publishEvent: DomainEvent,
         subscribers: Subscriber[],
     ): Promise<void> {
-        subscribers.forEach((sub) => {
-            this.notifySubscriber(publishEvent, sub);
+        subscribers.forEach(async (sub) => {
+            await this.notifySubscriber(publishEvent, sub);
         });
     }
 }
