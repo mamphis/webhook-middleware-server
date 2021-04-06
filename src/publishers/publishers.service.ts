@@ -43,6 +43,14 @@ export class PublishersService {
     }
 
     async delete(id: string): Promise<void> {
-        this.publisherModel.findByIdAndRemove(id);
+        this.publisherModel
+            .deleteOne({
+                _id: id,
+            })
+            .exec();
+    }
+
+    async count(): Promise<number> {
+        return this.publisherModel.countDocuments();
     }
 }

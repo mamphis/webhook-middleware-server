@@ -38,6 +38,11 @@ export class PublishersController {
         return this.publishersService.create(publisherDto);
     }
 
+    @Get('/count')
+    count(): Promise<number> {
+        return this.publishersService.count();
+    }
+
     @Get(':id')
     async findById(@Param('id') id: string): Promise<Publisher> {
         if (!Types.ObjectId.isValid(id)) {
