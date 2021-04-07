@@ -94,6 +94,7 @@ export class SubscribersService {
                     publishEvent.payload,
                     mapper.format,
                 );
+                console.log(subscriber);
                 this.sendWebhook(newObject, subscriber).then(
                     async (response) => {
                         this.eventEmitter.emit(
@@ -105,7 +106,7 @@ export class SubscribersService {
                                     : DomainEventStatus.Error,
                                 newObject,
                                 publishEvent.publisherId,
-                                subscriber.id,
+                                subscriber._id,
                                 response.status < 300
                                     ? null
                                     : await response.text(),
@@ -123,7 +124,7 @@ export class SubscribersService {
                     DomainEventStatus.Error,
                     {},
                     publishEvent.publisherId,
-                    subscriber.id,
+                    subscriber._id,
                     exception.response,
                 ),
             );

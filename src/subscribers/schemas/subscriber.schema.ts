@@ -10,7 +10,7 @@ export type SubscriberDocument = Subscriber & Document;
 @Schema({ versionKey: false })
 export class Subscriber {
     @Prop()
-    id: string;
+    _id: string;
 
     @Prop({ required: true })
     name: string;

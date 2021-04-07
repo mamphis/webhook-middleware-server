@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DomainEventsController } from './domain-events.controller';
 import { DomainEventsService } from './domain-events.service';
 import { DomainEvent, DomainEventSchema } from './schemas/domain-event.schema';
 
@@ -9,7 +10,7 @@ import { DomainEvent, DomainEventSchema } from './schemas/domain-event.schema';
             { name: DomainEvent.name, schema: DomainEventSchema },
         ]),
     ],
-    controllers: [],
+    controllers: [DomainEventsController],
     providers: [DomainEventsService],
     exports: [DomainEventsService],
 })

@@ -44,7 +44,11 @@ export class MappersService {
     }
 
     async delete(id: string): Promise<void> {
-        this.mapperModel.findByIdAndRemove(id);
+        this.mapperModel
+            .deleteOne({
+                _id: id,
+            })
+            .exec();
     }
 
     mapPayloadToFormat(payload: unknown, format: unknown): unknown {

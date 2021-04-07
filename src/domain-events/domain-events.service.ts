@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { PublisherTotalsDto } from './dto/publisher-totals.dto';
 import {
     DomainEvent,
     DomainEventDocument,
+    DomainEventType,
 } from './schemas/domain-event.schema';
 
 @Injectable()
@@ -34,5 +36,18 @@ export class DomainEventsService {
             throw new NotFoundException();
         }
         return event;
+    }
+
+    async getPublisherTotals(id: string): Promise<PublisherTotalsDto> {
+        const _totalWebhooksPublished = await this.domainEventModel
+            .find({
+                publisherId: id,
+                type: DomainEventType.Received,
+            })
+            .count()
+            .exec();
+        return {
+            totalWebhooksPublished: _totalWebhooksPublished,
+        };
     }
 }

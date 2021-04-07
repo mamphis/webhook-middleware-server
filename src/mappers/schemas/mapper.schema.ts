@@ -12,6 +12,9 @@ export class Mapper {
     @Prop()
     id: string;
 
+    @Prop({ required: true })
+    name: string;
+
     @Prop({ required: true, type: Schema.Types.Mixed })
     format: unknown;
 

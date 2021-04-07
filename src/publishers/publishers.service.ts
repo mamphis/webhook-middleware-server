@@ -38,6 +38,7 @@ export class PublishersService {
         return this.publisherModel
             .findByIdAndUpdate(id, publisherDto, {
                 useFindAndModify: true,
+                new: true,
             })
             .then((result) => <Publisher>result);
     }
