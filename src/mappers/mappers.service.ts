@@ -39,6 +39,7 @@ export class MappersService {
         return this.mapperModel
             .findByIdAndUpdate(id, mapperDto, {
                 useFindAndModify: true,
+                new: true,
             })
             .then((result) => <Mapper>result);
     }

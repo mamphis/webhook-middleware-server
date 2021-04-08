@@ -18,6 +18,9 @@ export class Mapper {
     @Prop({ required: true, type: Schema.Types.Mixed })
     format: unknown;
 
+    @Prop({ required: false, type: Schema.Types.Mixed })
+    sample: unknown;
+
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
 }

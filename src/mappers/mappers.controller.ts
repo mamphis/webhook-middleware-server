@@ -2,9 +2,11 @@ import {
     Body,
     Controller,
     Delete,
+    forwardRef,
     Get,
     HttpCode,
     HttpStatus,
+    Inject,
     NotFoundException,
     Param,
     Post,
@@ -17,11 +19,16 @@ import { Mapper } from './schemas/mapper.schema';
 import { Types } from 'mongoose';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from './mappers.module';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Controller('mappers')
 @ApiTags('Mappers')
 export class MappersController {
-    constructor(private readonly mappersService: MappersService) {}
+    constructor(
+        private readonly mappersService: MappersService,
+        @Inject(forwardRef(() => SubscribersService))
+        private readonly subscribersService: SubscribersService,
+        ) {}
 
     @Get()
     @ApiQuery({ name: 'offset', required: false })
@@ -61,6 +68,7 @@ export class MappersController {
             return;
         }
         this.mappersService.delete(id);
+        this.subscribersService.removeAllSubscriptionsWithMapper(id);
         return;
     }
 }

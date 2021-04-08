@@ -5,7 +5,7 @@ import {
     DomainEvent,
     DomainEventType,
 } from 'src/domain-events/schemas/domain-event.schema';
-import { Subscriber } from 'src/subscribers/schemas/subscriber.schema';
+import { SubscriberDocument } from 'src/subscribers/schemas/subscriber.schema';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class MessageReceivedListener {
         this.domainEventsService.create(event).then(() => {
             this.subscribersService
                 .findAllByPublisherId(event.publisherId)
-                .then((subscribers: Subscriber[]) => {
+                .then((subscribers: SubscriberDocument[]) => {
                     this.subscribersService.notifySubscribers(
                         event,
                         subscribers,

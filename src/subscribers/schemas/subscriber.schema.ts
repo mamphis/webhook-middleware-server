@@ -10,13 +10,13 @@ export type SubscriberDocument = Subscriber & Document;
 @Schema({ versionKey: false })
 export class Subscriber {
     @Prop()
-    _id: string;
+    id: string;
 
     @Prop({ required: true })
     name: string;
 
     @Prop([{ type: SubscribedPublisherSchema }])
-    subscribedTo: [SubscribedPublisher];
+    subscribedTo: SubscribedPublisher[];
 
     @Prop()
     webhookUrl: string;

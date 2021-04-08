@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SubscribersController } from './subscribers.controller';
 import { SubscribersService } from './subscribers.service';
@@ -13,7 +13,7 @@ export const DEFAULT_LIMIT = '10';
         MongooseModule.forFeature([
             { name: Subscriber.name, schema: SubscriberSchema },
         ]),
-        MappersModule,
+        forwardRef(() => MappersModule),
     ],
     controllers: [SubscribersController],
     providers: [SubscribersService],

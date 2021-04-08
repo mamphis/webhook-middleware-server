@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
@@ -18,6 +18,7 @@ export class SubscribersService {
     constructor(
         @InjectModel(Subscriber.name)
         private subscriberModel: Model<SubscriberDocument>,
+        @Inject(forwardRef(() => MappersService))
         private mappersService: MappersService,
         private eventEmitter: EventEmitter2,
     ) {}
@@ -61,8 +62,17 @@ export class SubscribersService {
         this.subscriberModel.findByIdAndRemove(id);
     }
 
-    async findAllByPublisherId(id: string): Promise<Subscriber[]> {
-        return this.subscriberModel.find({ 'subscribedTo.publisherId': id });
+    async findAllByPublisherId(id: string): Promise<SubscriberDocument[]> {
+        return this.subscriberModel.find({'subscribedTo.publisherId': id});
+    }
+
+    async removeAllSubscriptionsWithMapper(mapperId: string): Promise<void> {
+        return this.subscriberModel.find({'subscribedTo.mapperId': mapperId}).then((subscribers: SubscriberDocument[]) => {
+                subscribers.forEach((subscriber: SubscriberDocument) => {
+                    subscriber.subscribedTo = subscriber.subscribedTo.filter((subscriberPublisher) => subscriberPublisher.mapperId !== mapperId);
+                    subscriber.save();
+                })
+        });
     }
 
     async sendWebhook(
@@ -82,7 +92,7 @@ export class SubscribersService {
 
     async notifySubscriber(
         publishEvent: DomainEvent,
-        subscriber: Subscriber,
+        subscriber: SubscriberDocument,
     ): Promise<void> {
         const mapperId = subscriber.subscribedTo.find(
             (subscribedTo) =>
@@ -94,7 +104,6 @@ export class SubscribersService {
                     publishEvent.payload,
                     mapper.format,
                 );
-                console.log(subscriber);
                 this.sendWebhook(newObject, subscriber).then(
                     async (response) => {
                         this.eventEmitter.emit(
@@ -134,7 +143,7 @@ export class SubscribersService {
 
     async notifySubscribers(
         publishEvent: DomainEvent,
-        subscribers: Subscriber[],
+        subscribers: SubscriberDocument[],
     ): Promise<void> {
         subscribers.forEach(async (sub) => {
             await this.notifySubscriber(publishEvent, sub);

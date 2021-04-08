@@ -50,4 +50,17 @@ export class DomainEventsService {
             totalWebhooksPublished: _totalWebhooksPublished,
         };
     }
+
+    async getPublishedWebhooksByPublisher(id: string): Promise<DomainEvent[]> {
+        return this.domainEventModel
+            .find({
+                publisherId: id,
+                type: DomainEventType.Received,
+            })
+            .sort({
+                createdAt: 'desc',
+            })
+            .limit(10)
+            .exec();
+    }
 }

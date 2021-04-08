@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { DomainEventsService } from './domain-events.service';
 import { PublisherTotalsDto } from './dto/publisher-totals.dto';
+import { DomainEvent } from './schemas/domain-event.schema';
 
 @Controller('domain-events')
 @ApiTags('DomainEvents')
@@ -15,5 +16,15 @@ export class DomainEventsController {
             throw new NotFoundException();
         }
         return this.domainEventsService.getPublisherTotals(id);
+    }
+
+    @Get('/publisher/:publisherId/published-webhooks')
+    getPublishedWebhooks(
+        @Param('publisherId') id: string,
+    ): Promise<DomainEvent[]> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new NotFoundException();
+        }
+        return this.domainEventsService.getPublishedWebhooksByPublisher(id);
     }
 }

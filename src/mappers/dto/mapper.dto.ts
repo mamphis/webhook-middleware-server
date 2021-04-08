@@ -6,6 +6,10 @@ export class MapperDto {
     @ApiProperty()
     readonly format: unknown;
 
+    @ApiProperty()
+    @IsNotEmpty()
+    readonly sample: unknown;
+
     @IsNotEmpty()
     @ApiProperty()
     readonly name: string;
