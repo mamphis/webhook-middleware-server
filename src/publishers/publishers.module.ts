@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { SubscribersModule } from 'src/subscribers/subscribers.module';
 import { PublishersController } from './publishers.controller';
 import { PublishersService } from './publishers.service';
 import { Publisher, PublisherSchema } from './schemas/publisher.schema';
@@ -12,6 +13,7 @@ export const DEFAULT_LIMIT = '10';
         MongooseModule.forFeature([
             { name: Publisher.name, schema: PublisherSchema },
         ]),
+        SubscribersModule
     ],
     controllers: [PublishersController],
     providers: [PublishersService],

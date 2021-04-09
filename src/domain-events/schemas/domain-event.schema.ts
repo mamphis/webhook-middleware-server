@@ -16,6 +16,10 @@ export enum DomainEventType {
     Received = 'received_message',
     Sent = 'sent_message',
 }
+export interface ResponseType {
+    response: string | null;
+    status: number;
+}
 
 @NestMongooseSchema({ versionKey: false })
 export class DomainEvent {
@@ -25,7 +29,7 @@ export class DomainEvent {
         payload: unknown,
         publisherId: string | null = null,
         subscriberId: string | null = null,
-        metadata: string | null = null,
+        metadata: ResponseType | null = null,
         prevEvent: DomainEvent | null = null,
     ) {
         this.type = type;

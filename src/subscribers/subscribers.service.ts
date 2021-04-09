@@ -4,6 +4,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
 import {
     DomainEvent,
+    DomainEventDocument,
     DomainEventStatus,
     DomainEventType,
 } from 'src/domain-events/schemas/domain-event.schema';
@@ -59,7 +60,9 @@ export class SubscribersService {
     // }
 
     async delete(id: string): Promise<void> {
-        this.subscriberModel.findByIdAndRemove(id);
+        this.subscriberModel.findByIdAndRemove(id, {
+            useFindAndModify: true
+        }).exec();
     }
 
     async findAllByPublisherId(id: string): Promise<SubscriberDocument[]> {
@@ -70,6 +73,15 @@ export class SubscribersService {
         return this.subscriberModel.find({'subscribedTo.mapperId': mapperId}).then((subscribers: SubscriberDocument[]) => {
                 subscribers.forEach((subscriber: SubscriberDocument) => {
                     subscriber.subscribedTo = subscriber.subscribedTo.filter((subscriberPublisher) => subscriberPublisher.mapperId !== mapperId);
+                    subscriber.save();
+                })
+        });
+    }
+
+    async removeAllSubscriptionsWithPublisher(publisherId: string): Promise<void> {
+        return this.subscriberModel.find({'subscribedTo.publisherId': publisherId}).then((subscribers: SubscriberDocument[]) => {
+                subscribers.forEach((subscriber: SubscriberDocument) => {
+                    subscriber.subscribedTo = subscriber.subscribedTo.filter((subscriberPublisher) => subscriberPublisher.publisherId !== publisherId);
                     subscriber.save();
                 })
         });
@@ -91,8 +103,8 @@ export class SubscribersService {
     }
 
     async notifySubscriber(
-        publishEvent: DomainEvent,
-        subscriber: SubscriberDocument,
+        publishEvent: DomainEvent | DomainEventDocument,
+        subscriber: SubscriberDocument | Subscriber,
     ): Promise<void> {
         const mapperId = subscriber.subscribedTo.find(
             (subscribedTo) =>
@@ -115,10 +127,11 @@ export class SubscribersService {
                                     : DomainEventStatus.Error,
                                 newObject,
                                 publishEvent.publisherId,
-                                subscriber._id,
-                                response.status < 300
-                                    ? null
-                                    : await response.text(),
+                                (<SubscriberDocument>subscriber)._id ? (<SubscriberDocument>subscriber)._id : subscriber.id,
+                                {
+                                    response: await response.text(),
+                                    status: response.status,
+                                },
                                 publishEvent,
                             ),
                         );
@@ -133,7 +146,7 @@ export class SubscribersService {
                     DomainEventStatus.Error,
                     {},
                     publishEvent.publisherId,
-                    subscriber._id,
+                    (<SubscriberDocument>subscriber)._id ? (<SubscriberDocument>subscriber)._id : subscriber.id,
                     exception.response,
                 ),
             );

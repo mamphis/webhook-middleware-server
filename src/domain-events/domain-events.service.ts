@@ -38,6 +38,13 @@ export class DomainEventsService {
         return event;
     }
 
+    async getByPrevEventId(id: string): Promise<DomainEvent> {
+        return this.domainEventModel.findOne({
+                'prevEvent._id': id
+            })
+            .exec();
+    }
+
     async getPublisherTotals(id: string): Promise<PublisherTotalsDto> {
         const _totalWebhooksPublished = await this.domainEventModel
             .find({
@@ -56,6 +63,19 @@ export class DomainEventsService {
             .find({
                 publisherId: id,
                 type: DomainEventType.Received,
+            })
+            .sort({
+                createdAt: 'desc',
+            })
+            .limit(10)
+            .exec();
+    }
+
+    async getReceivedWebhooksBySubscriber(id: string): Promise<DomainEvent[]> {
+        return this.domainEventModel
+            .find({
+                subscriberId: id,
+                type: DomainEventType.Sent,
             })
             .sort({
                 createdAt: 'desc',

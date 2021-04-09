@@ -1,14 +1,18 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { SubscribersService } from 'src/subscribers/subscribers.service';
 import { DomainEventsService } from './domain-events.service';
 import { PublisherTotalsDto } from './dto/publisher-totals.dto';
-import { DomainEvent } from './schemas/domain-event.schema';
+import { DomainEvent, DomainEventDocument } from './schemas/domain-event.schema';
 
 @Controller('domain-events')
 @ApiTags('DomainEvents')
 export class DomainEventsController {
-    constructor(private readonly domainEventsService: DomainEventsService) {}
+    constructor(
+        private readonly domainEventsService: DomainEventsService,
+        private readonly subscribersService: SubscribersService,
+        ) {}
 
     @Get('/publisher/:publisherId/totals')
     getTotals(@Param('publisherId') id: string): Promise<PublisherTotalsDto> {
@@ -26,5 +30,28 @@ export class DomainEventsController {
             throw new NotFoundException();
         }
         return this.domainEventsService.getPublishedWebhooksByPublisher(id);
+    }
+
+    @Get('/subscriber/:subscriberId/received-webhooks')
+    getSubscribedWebhooks(
+        @Param('subscriberId') id: string,
+    ): Promise<DomainEvent[]> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new NotFoundException();
+        }
+        return this.domainEventsService.getReceivedWebhooksBySubscriber(id);
+    }
+
+    @Post('/retry/:domainEventId')
+    resendWebhook(@Param('domainEventId') id: string): Promise<DomainEvent> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new NotFoundException();
+        }
+        return this.domainEventsService.getById(id).then(async (domainEvent: DomainEventDocument) => {
+            const prevEvent = domainEvent.prevEvent;
+            prevEvent.id = prevEvent.id + '_resend_' + (new Date()).getTime();
+            this.subscribersService.notifySubscriber(prevEvent, await this.subscribersService.getById(domainEvent.subscriberId));
+            return this.domainEventsService.getByPrevEventId(prevEvent.id);
+        })
     }
 }
