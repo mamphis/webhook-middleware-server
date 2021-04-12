@@ -3,6 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { DomainEventsService } from 'src/domain-events/domain-events.service';
 import {
     DomainEvent,
+    DomainEventDocument,
     DomainEventType,
 } from 'src/domain-events/schemas/domain-event.schema';
 import { SubscriberDocument } from 'src/subscribers/schemas/subscriber.schema';
@@ -16,12 +17,12 @@ export class MessageReceivedListener {
     ) {}
     @OnEvent(DomainEventType.Received)
     handleMessageReceivedEvent(event: DomainEvent): void {
-        this.domainEventsService.create(event).then(() => {
+        this.domainEventsService.create(event).then((newEvent: DomainEventDocument) => {
             this.subscribersService
                 .findAllByPublisherId(event.publisherId)
                 .then((subscribers: SubscriberDocument[]) => {
                     this.subscribersService.notifySubscribers(
-                        event,
+                        newEvent,
                         subscribers,
                     );
                 });
