@@ -118,7 +118,6 @@ export class SubscribersService {
                 );
                 this.sendWebhook(newObject, subscriber).then(
                     async (response) => {
-                        console.log(publishEvent);
                         this.eventEmitter.emit(
                             DomainEventType.Sent,
                             new DomainEvent(

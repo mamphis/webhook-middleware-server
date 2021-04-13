@@ -49,9 +49,11 @@ export class DomainEventsController {
         }
         return this.domainEventsService.getById(id).then(async (domainEvent: DomainEventDocument) => {
             const prevEvent = domainEvent.prevEvent;
-            prevEvent.id = prevEvent.id + '_resend_' + (new Date()).getTime();
+            const splitId = ((<DomainEventDocument>prevEvent)._id).toString().split('_');
+            const newId = splitId[0].concat(splitId.length > 1 ? '_'.concat((parseInt(splitId[1]) + 1).toString()) : '_1');
+            (<DomainEventDocument>prevEvent)._id = newId;
             this.subscribersService.notifySubscriber(prevEvent, await this.subscribersService.getById(domainEvent.subscriberId));
-            return this.domainEventsService.getByPrevEventId(prevEvent.id);
+            return this.domainEventsService.getByPrevEventId(newId);
         })
     }
 }
