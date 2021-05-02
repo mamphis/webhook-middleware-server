@@ -8,6 +8,7 @@ import { UsersService } from './users.service';
   providers: [UsersService],
   exports: [UsersService],
   imports: [
+    MongooseModule.forRoot('mongodb://root:root@mongo:27017/admin'),
     ConsoleModule,
     MongooseModule.forFeature([
         { name: User.name, schema: UserSchema },

@@ -29,6 +29,7 @@ export class UsersService {
     const spin = createSpinner();
     spin.start(`Creating a user`);
 
+    console.log(username, password);
     await this.create(username, password);
 
     spin.succeed(`User with username ${username} successfully created`);

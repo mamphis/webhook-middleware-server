@@ -23,8 +23,8 @@ export class User {
     }
 }
 
-export const UserSchema = SchemaFactory.createForClass(User).pre('save', (next) => {
-    const user = this as User;
+export const UserSchema = SchemaFactory.createForClass(User).pre('save', function (next) {
+    const user = this as UserDocument;
     user.username = user.username.toLowerCase();
 
     bcrypt.genSalt(10, (genSaltError, salt) => {
