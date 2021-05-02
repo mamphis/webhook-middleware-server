@@ -12,6 +12,7 @@ import {
     Post,
     Put,
     Query,
+    UseGuards,
 } from '@nestjs/common';
 import { MapperDto } from './dto/mapper.dto';
 import { MappersService } from './mappers.service';
@@ -19,8 +20,10 @@ import { Mapper } from './schemas/mapper.schema';
 import { Types } from 'mongoose';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from './mappers.module';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { SubscribersService } from 'src/subscribers/subscribers.service';
+import { SubscribersService } from '../subscribers/subscribers.service';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('mappers')
 @ApiTags('Mappers')
 export class MappersController {

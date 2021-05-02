@@ -10,6 +10,7 @@ import {
     Post,
     Put,
     Query,
+    UseGuards,
 } from '@nestjs/common';
 import { PublisherDto } from './dto/publisher.dto';
 import { PublishersService } from './publishers.service';
@@ -17,17 +18,18 @@ import { Publisher } from './schemas/publisher.schema';
 import { Types } from 'mongoose';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from './publishers.module';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { SubscribersService } from 'src/subscribers/subscribers.service';
+import { SubscribersService } from '../subscribers/subscribers.service';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('publishers')
 @ApiTags('Publishers')
 export class PublishersController {
     constructor(
         private readonly publishersService: PublishersService,
         private readonly subscribersService: SubscribersService,
-        ) {}
+    ) {}
     
-
     @Get()
     @ApiQuery({ name: 'offset', required: false })
     @ApiQuery({ name: 'limit', required: false })

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { DomainEventsModule } from 'src/domain-events/domain-events.module';
-import { PublishersModule } from 'src/publishers/publishers.module';
-import { SubscribersModule } from 'src/subscribers/subscribers.module';
+import { DomainEventsModule } from '..//domain-events/domain-events.module';
+import { PublishersModule } from '../publishers/publishers.module';
+import { SubscribersModule } from '../subscribers/subscribers.module';
 import { MessageReceivedListener } from './events/message-received.listener';
 import { MessageSentListener } from './events/message-sent.listener';
 import { WebhooksController } from './webhooks.controller';

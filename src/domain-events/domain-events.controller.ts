@@ -1,4 +1,5 @@
-import { Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
@@ -6,6 +7,7 @@ import { DomainEventsService } from './domain-events.service';
 import { PublisherTotalsDto } from './dto/publisher-totals.dto';
 import { DomainEvent, DomainEventDocument } from './schemas/domain-event.schema';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('domain-events')
 @ApiTags('DomainEvents')
 export class DomainEventsController {

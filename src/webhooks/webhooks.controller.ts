@@ -13,8 +13,8 @@ import {
     DomainEvent,
     DomainEventStatus,
     DomainEventType,
-} from 'src/domain-events/schemas/domain-event.schema';
-import { PublishersService } from 'src/publishers/publishers.service';
+} from '../domain-events/schemas/domain-event.schema';
+import { PublishersService } from '../publishers/publishers.service';
 import { Types } from 'mongoose';
 
 @Controller('webhooks')

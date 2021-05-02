@@ -9,6 +9,9 @@ import { MappersModule } from './mappers/mappers.module';
 import { PublishersModule } from './publishers/publishers.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ConsoleModule } from 'nestjs-console';
 
 @Module({
     imports: [
@@ -20,6 +23,9 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         MappersModule,
         SubscribersModule,
         EventEmitterModule.forRoot(),
+        AuthModule,
+        UsersModule,
+        ConsoleModule
     ],
     controllers: [AppController],
     providers: [AppService],

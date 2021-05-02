@@ -7,8 +7,8 @@ import {
     DomainEventDocument,
     DomainEventStatus,
     DomainEventType,
-} from 'src/domain-events/schemas/domain-event.schema';
-import { MappersService } from 'src/mappers/mappers.service';
+} from '../domain-events/schemas/domain-event.schema';
+import { MappersService } from '../mappers/mappers.service';
 import { SubscriberDto } from './dto/subscriber.dto';
 import { Subscriber, SubscriberDocument } from './schemas/subscriber.schema';
 import fetch from 'node-fetch';

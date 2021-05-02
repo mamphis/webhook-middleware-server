@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Subscriber } from 'src/subscribers/schemas/subscriber.schema';
 
 export type PublisherDocument = Publisher & Document;
 
@@ -14,8 +13,6 @@ export class Publisher {
 
     @Prop({ type: Date, required: true, default: Date.now })
     createdAt: Date;
-
-    subscribers: Subscriber[];
 }
 
 export const PublisherSchema = SchemaFactory.createForClass(Publisher);

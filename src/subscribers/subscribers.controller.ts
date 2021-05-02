@@ -9,6 +9,7 @@ import {
     Param,
     Post,
     Query,
+    UseGuards,
 } from '@nestjs/common';
 import { SubscriberDto } from './dto/subscriber.dto';
 import { SubscribersService } from './subscribers.service';
@@ -16,7 +17,9 @@ import { Subscriber } from './schemas/subscriber.schema';
 import { Types } from 'mongoose';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from './subscribers.module';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('subscribers')
 @ApiTags('Subscribers')
 export class SubscribersController {
