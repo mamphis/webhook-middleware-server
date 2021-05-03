@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
@@ -16,7 +16,13 @@ import { ConsoleModule } from 'nestjs-console';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forRoot('mongodb://root:root@mongo:27017/admin'),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (config: ConfigService) => ({
+                uri: config.get('DATABASE_URL')
+            }),
+            inject: [ConfigService]
+        }),
         PublishersModule,
         WebhooksModule,
         DomainEventsModule,
