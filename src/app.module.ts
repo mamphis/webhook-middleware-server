@@ -19,9 +19,9 @@ import { ConsoleModule } from 'nestjs-console';
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (config: ConfigService) => ({
-                uri: config.get('DATABASE_URL')
+                uri: config.get('DATABASE_URL'),
             }),
-            inject: [ConfigService]
+            inject: [ConfigService],
         }),
         PublishersModule,
         WebhooksModule,
