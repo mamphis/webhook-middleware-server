@@ -83,4 +83,23 @@ export class DomainEventsService {
             .limit(10)
             .exec();
     }
+
+    normalizeWebhookPayload = (payload: any): any => {
+        for (const prop in payload) {
+            const json = this.stringToJson(payload[prop]);
+            if (json) {
+                payload[prop] = json;
+                this.normalizeWebhookPayload(payload[prop]);
+            }
+        }
+        return payload;
+    }
+
+    stringToJson = (str: string): boolean => {
+        try {
+            return JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+    }
 }

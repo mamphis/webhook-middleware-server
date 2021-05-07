@@ -17,6 +17,7 @@ export class MessageReceivedListener {
     ) {}
     @OnEvent(DomainEventType.Received)
     handleMessageReceivedEvent(event: DomainEvent): void {
+        event.payload = this.domainEventsService.normalizeWebhookPayload(event.payload);
         this.domainEventsService.create(event).then((newEvent: DomainEventDocument) => {
             this.subscribersService
                 .findAllByPublisherId(event.publisherId)
