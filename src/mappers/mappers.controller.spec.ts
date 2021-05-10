@@ -20,14 +20,16 @@ describe('Publishers Controller', () => {
                     provide: MappersService,
                     useValue: {
                         findAll: jest.fn(),
-                        create: jest.fn(
-                            (arg: MapperDto) => ({ id: 'New', createdAt: date, ...arg })
-                        ),
+                        create: jest.fn((arg: MapperDto) => ({
+                            id: 'New',
+                            createdAt: date,
+                            ...arg,
+                        })),
                         count: jest.fn(),
                         getById: jest.fn(),
                         update: jest.fn(),
                         delete: jest.fn(),
-                        mapPayloadToFormat: jest.fn()
+                        mapPayloadToFormat: jest.fn(),
                     },
                 },
                 {
@@ -38,16 +40,14 @@ describe('Publishers Controller', () => {
                 },
             ],
         }).compile();
-        mappersController = module.get<MappersController>(
-            MappersController,
-        );
+        mappersController = module.get<MappersController>(MappersController);
         mappersService = module.get<MappersService>(MappersService);
         subscribersService = module.get<SubscribersService>(SubscribersService);
     });
 
     it('should create a new Mapper', async () => {
         const spyOn = jest.spyOn(mappersService, 'create');
-        await mappersController.create({ name: '', format: {}, sample: {}});
+        await mappersController.create({ name: '', format: {}, sample: {} });
         expect(spyOn).toBeCalledTimes(1);
     });
 
@@ -56,7 +56,7 @@ describe('Publishers Controller', () => {
         await mappersController.findAll();
         expect(spyOn).toBeCalledTimes(1);
     });
-    
+
     it('should get a Publisher', async () => {
         const spyOn = jest.spyOn(mappersService, 'getById');
         try {
@@ -71,13 +71,20 @@ describe('Publishers Controller', () => {
 
     it('should update a Publisher', async () => {
         const spyOn = jest.spyOn(mappersService, 'update');
-        await mappersController.update('publisherId', { name: '', format: {}, sample: {}});
+        await mappersController.update('publisherId', {
+            name: '',
+            format: {},
+            sample: {},
+        });
         expect(spyOn).toBeCalledTimes(1);
     });
 
     it('should delete a Publisher', async () => {
         const spyOnDelete = jest.spyOn(mappersService, 'delete');
-        const spyOnRemoveSubscriptions = jest.spyOn(subscribersService, 'removeAllSubscriptionsWithMapper');
+        const spyOnRemoveSubscriptions = jest.spyOn(
+            subscribersService,
+            'removeAllSubscriptionsWithMapper',
+        );
         await mappersController.delete('invalid');
         expect(spyOnRemoveSubscriptions).toBeCalledTimes(0);
         expect(spyOnDelete).toBeCalledTimes(0);

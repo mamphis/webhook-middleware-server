@@ -3,7 +3,7 @@ import { UsersModule } from './users/users.module';
 
 const bootstrap = new BootstrapConsole({
     module: UsersModule,
-    useDecorators: true
+    useDecorators: true,
 });
 bootstrap.init().then(async (app) => {
     try {

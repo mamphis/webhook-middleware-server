@@ -31,6 +31,7 @@ export class DomainEvent {
         subscriberId: string | null = null,
         metadata: ResponseType | null = null,
         prevEvent: DomainEvent | null = null,
+        executionTime: number | null = null,
     ) {
         this.type = type;
         this.status = status;
@@ -39,6 +40,7 @@ export class DomainEvent {
         this.subscriberId = subscriberId;
         this.metadata = metadata;
         this.prevEvent = prevEvent;
+        this.executionTime = executionTime;
     }
     @Prop()
     id: string;
@@ -66,6 +68,9 @@ export class DomainEvent {
 
     @Prop({ required: false, type: this })
     prevEvent: DomainEvent;
+
+    @Prop({ required: false })
+    executionTime: number;
 }
 
 export const DomainEventSchema = SchemaFactory.createForClass(DomainEvent);

@@ -13,7 +13,7 @@ export const DEFAULT_LIMIT = '10';
         MongooseModule.forFeature([
             { name: Publisher.name, schema: PublisherSchema },
         ]),
-        SubscribersModule
+        SubscribersModule,
     ],
     controllers: [PublishersController],
     providers: [PublishersService],

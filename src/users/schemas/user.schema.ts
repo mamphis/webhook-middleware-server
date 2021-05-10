@@ -23,20 +23,23 @@ export class User {
     }
 }
 
-export const UserSchema = SchemaFactory.createForClass(User).pre('save', function (next) {
-    const user = this as UserDocument;
-    user.username = user.username.toLowerCase();
+export const UserSchema = SchemaFactory.createForClass(User).pre(
+    'save',
+    function (next) {
+        const user = this as UserDocument;
+        user.username = user.username.toLowerCase();
 
-    bcrypt.genSalt(10, (genSaltError, salt) => {
-        if (genSaltError) {
-            return next(genSaltError);
-        }
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if (err) {
-                return next(err);
+        bcrypt.genSalt(10, (genSaltError, salt) => {
+            if (genSaltError) {
+                return next(genSaltError);
             }
-            user.password = hash;
-            next();
+            bcrypt.hash(user.password, salt, (err, hash) => {
+                if (err) {
+                    return next(err);
+                }
+                user.password = hash;
+                next();
+            });
         });
-    });
-});
+    },
+);

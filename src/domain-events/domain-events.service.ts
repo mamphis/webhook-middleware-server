@@ -39,8 +39,9 @@ export class DomainEventsService {
     }
 
     async getByPrevEventId(id: string): Promise<DomainEvent> {
-        return this.domainEventModel.findOne({
-                'prevEvent._id': id
+        return this.domainEventModel
+            .findOne({
+                'prevEvent._id': id,
             })
             .exec();
     }
@@ -93,7 +94,7 @@ export class DomainEventsService {
             }
         }
         return payload;
-    }
+    };
 
     stringToJson = (str: string): boolean => {
         try {
@@ -101,5 +102,64 @@ export class DomainEventsService {
         } catch (e) {
             return false;
         }
+    };
+
+    getCount(
+        from: string | null,
+        to: string | null,
+        _type: string | null,
+    ): Promise<number> {
+        return this.domainEventModel
+            .find({
+                ...((from || to) && {
+                    createdAt: {
+                        ...(from && { $gte: new Date(from) }),
+                        ...(to && { $lte: new Date(to) }),
+                    },
+                }),
+                ...(_type && { type: _type }),
+            })
+            .count()
+            .exec();
+    }
+
+    getAverageExecutionTime(): Promise<number> {
+        return this.domainEventModel
+            .aggregate([
+                {
+                    $match: {
+                        type: DomainEventType.Sent,
+                        executionTime: {
+                            $ne: null,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        average: {
+                            $avg: '$executionTime',
+                        },
+                    },
+                },
+            ])
+            .exec();
+    }
+
+    getExecutionTimes(
+        from: string | null,
+        to: string | null,
+    ): Promise<DomainEvent[]> {
+        return this.domainEventModel
+            .find({
+                executionTime: {
+                    $ne: null,
+                },
+                createdAt: {
+                    $gt: new Date(from),
+                    $lt: new Date(to),
+                },
+            })
+            .exec();
     }
 }

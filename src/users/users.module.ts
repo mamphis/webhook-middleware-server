@@ -6,21 +6,21 @@ import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
 @Module({
-  providers: [UsersService],
-  exports: [UsersService],
-  imports: [
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => {
-          return ({
-            uri: config.get('DATABASE_URL'),
-      })},
-      inject: [ConfigService],
-  }),
-    ConsoleModule,
-    MongooseModule.forFeature([
-        { name: User.name, schema: UserSchema },
-    ])
-],
+    providers: [UsersService],
+    exports: [UsersService],
+    imports: [
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (config: ConfigService) => {
+                console.log(config.get('DATABASE_URL'));
+                return {
+                    uri: 'mongodb://root:root@mongo:27017/admin',
+                };
+            },
+            inject: [ConfigService],
+        }),
+        ConsoleModule,
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    ],
 })
 export class UsersModule {}

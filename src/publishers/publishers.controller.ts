@@ -29,7 +29,7 @@ export class PublishersController {
         private readonly publishersService: PublishersService,
         private readonly subscribersService: SubscribersService,
     ) {}
-    
+
     @Get()
     @ApiQuery({ name: 'offset', required: false })
     @ApiQuery({ name: 'limit', required: false })

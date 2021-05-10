@@ -1,4 +1,9 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    forwardRef,
+    Inject,
+    Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
@@ -60,31 +65,45 @@ export class SubscribersService {
     // }
 
     async delete(id: string): Promise<void> {
-        this.subscriberModel.findByIdAndRemove(id, {
-            useFindAndModify: true
-        }).exec();
+        this.subscriberModel
+            .findByIdAndRemove(id, {
+                useFindAndModify: true,
+            })
+            .exec();
     }
 
     async findAllByPublisherId(id: string): Promise<SubscriberDocument[]> {
-        return this.subscriberModel.find({'subscribedTo.publisherId': id});
+        return this.subscriberModel.find({ 'subscribedTo.publisherId': id });
     }
 
     async removeAllSubscriptionsWithMapper(mapperId: string): Promise<void> {
-        return this.subscriberModel.find({'subscribedTo.mapperId': mapperId}).then((subscribers: SubscriberDocument[]) => {
+        return this.subscriberModel
+            .find({ 'subscribedTo.mapperId': mapperId })
+            .then((subscribers: SubscriberDocument[]) => {
                 subscribers.forEach((subscriber: SubscriberDocument) => {
-                    subscriber.subscribedTo = subscriber.subscribedTo.filter((subscriberPublisher) => subscriberPublisher.mapperId !== mapperId);
+                    subscriber.subscribedTo = subscriber.subscribedTo.filter(
+                        (subscriberPublisher) =>
+                            subscriberPublisher.mapperId !== mapperId,
+                    );
                     subscriber.save();
-                })
-        });
+                });
+            });
     }
 
-    async removeAllSubscriptionsWithPublisher(publisherId: string): Promise<void> {
-        return this.subscriberModel.find({'subscribedTo.publisherId': publisherId}).then((subscribers: SubscriberDocument[]) => {
+    async removeAllSubscriptionsWithPublisher(
+        publisherId: string,
+    ): Promise<void> {
+        return this.subscriberModel
+            .find({ 'subscribedTo.publisherId': publisherId })
+            .then((subscribers: SubscriberDocument[]) => {
                 subscribers.forEach((subscriber: SubscriberDocument) => {
-                    subscriber.subscribedTo = subscriber.subscribedTo.filter((subscriberPublisher) => subscriberPublisher.publisherId !== publisherId);
+                    subscriber.subscribedTo = subscriber.subscribedTo.filter(
+                        (subscriberPublisher) =>
+                            subscriberPublisher.publisherId !== publisherId,
+                    );
                     subscriber.save();
-                })
-        });
+                });
+            });
     }
 
     async sendWebhook(
@@ -105,29 +124,31 @@ export class SubscribersService {
     async notifySubscriber(
         publishEvent: DomainEvent | DomainEventDocument,
         subscriber: SubscriberDocument | Subscriber,
-    ): Promise<void> {
+    ): Promise<DomainEvent> {
         const mapperId = subscriber.subscribedTo.find(
             (subscribedTo) =>
                 publishEvent.publisherId === subscribedTo.publisherId,
         ).mapperId;
         try {
-            this.mappersService.getById(mapperId).then(async (mapper) => {
-                const newObject = this.mappersService.mapPayloadToFormat(
-                    publishEvent.payload,
-                    mapper.format,
-                );
-                this.sendWebhook(newObject, subscriber).then(
-                    async (response) => {
-                        this.eventEmitter.emit(
-                            DomainEventType.Sent,
-                            new DomainEvent(
+            return this.mappersService
+                .getById(mapperId)
+                .then(async (mapper) => {
+                    const newObject = this.mappersService.mapPayloadToFormat(
+                        publishEvent.payload,
+                        mapper.format,
+                    );
+                    return this.sendWebhook(newObject, subscriber).then(
+                        async (response) => {
+                            return new DomainEvent(
                                 DomainEventType.Sent,
                                 response.status < 300
                                     ? DomainEventStatus.Success
                                     : DomainEventStatus.Error,
                                 newObject,
                                 publishEvent.publisherId,
-                                (<SubscriberDocument>subscriber)._id ? (<SubscriberDocument>subscriber)._id : subscriber.id,
+                                (<SubscriberDocument>subscriber)._id
+                                    ? (<SubscriberDocument>subscriber)._id
+                                    : subscriber.id,
                                 {
                                     response: await response.text(),
                                     status: response.status,
@@ -135,12 +156,11 @@ export class SubscribersService {
                                 {
                                     id: (<DomainEventDocument>publishEvent)._id,
                                     ...publishEvent,
-                                }
-                            ),
-                        );
-                    },
-                );
-            });
+                                },
+                            );
+                        },
+                    );
+                });
         } catch (exception) {
             this.eventEmitter.emit(
                 DomainEventType.Sent,
@@ -149,7 +169,9 @@ export class SubscribersService {
                     DomainEventStatus.Error,
                     {},
                     publishEvent.publisherId,
-                    (<SubscriberDocument>subscriber)._id ? (<SubscriberDocument>subscriber)._id : subscriber.id,
+                    (<SubscriberDocument>subscriber)._id
+                        ? (<SubscriberDocument>subscriber)._id
+                        : subscriber.id,
                     exception.response,
                 ),
             );
@@ -160,9 +182,9 @@ export class SubscribersService {
     async notifySubscribers(
         publishEvent: DomainEvent,
         subscribers: SubscriberDocument[],
-    ): Promise<void> {
-        subscribers.forEach(async (sub) => {
-            await this.notifySubscriber(publishEvent, sub);
-        });
+    ): Promise<DomainEvent[]> {
+        return Promise.all(
+            subscribers.map((sub) => this.notifySubscriber(publishEvent, sub)),
+        );
     }
 }

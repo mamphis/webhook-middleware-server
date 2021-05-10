@@ -31,7 +31,7 @@ import { ConsoleModule } from 'nestjs-console';
         EventEmitterModule.forRoot(),
         AuthModule,
         UsersModule,
-        ConsoleModule
+        ConsoleModule,
     ],
     controllers: [AppController],
     providers: [AppService],

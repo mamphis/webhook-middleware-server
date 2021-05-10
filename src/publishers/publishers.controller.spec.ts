@@ -20,9 +20,11 @@ describe('Publishers Controller', () => {
                     provide: PublishersService,
                     useValue: {
                         findAll: jest.fn(),
-                        create: jest.fn(
-                            (arg: PublisherDto) => ({ id: 'New', createdAt: date, ...arg })
-                        ),
+                        create: jest.fn((arg: PublisherDto) => ({
+                            id: 'New',
+                            createdAt: date,
+                            ...arg,
+                        })),
                         count: jest.fn(),
                         getById: jest.fn(),
                         update: jest.fn(),
@@ -80,7 +82,10 @@ describe('Publishers Controller', () => {
 
     it('should delete a Publisher', async () => {
         const spyOnDelete = jest.spyOn(publishersService, 'delete');
-        const spyOnRemoveSubscriptions = jest.spyOn(subscribersService, 'removeAllSubscriptionsWithPublisher');
+        const spyOnRemoveSubscriptions = jest.spyOn(
+            subscribersService,
+            'removeAllSubscriptionsWithPublisher',
+        );
         await publishersController.delete('invalid');
         expect(spyOnRemoveSubscriptions).toBeCalledTimes(0);
         expect(spyOnDelete).toBeCalledTimes(0);

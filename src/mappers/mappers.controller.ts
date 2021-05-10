@@ -31,7 +31,7 @@ export class MappersController {
         private readonly mappersService: MappersService,
         @Inject(forwardRef(() => SubscribersService))
         private readonly subscribersService: SubscribersService,
-        ) {}
+    ) {}
 
     @Get()
     @ApiQuery({ name: 'offset', required: false })
