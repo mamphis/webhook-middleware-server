@@ -16,8 +16,10 @@ import { PublisherTotalsDto } from './dto/publisher-totals.dto';
 import {
     DomainEvent,
     DomainEventDocument,
+    DomainEventStatus,
+    DomainEventType,
 } from './schemas/domain-event.schema';
-
+import type { DayCount } from './domain-events.service';
 @UseGuards(AuthGuard('jwt'))
 @Controller('domain-events')
 @ApiTags('DomainEvents')
@@ -26,6 +28,29 @@ export class DomainEventsController {
         private readonly domainEventsService: DomainEventsService,
         private readonly subscribersService: SubscribersService,
     ) {}
+
+    @Get('/')
+    get(
+        @Query('offset') offset: string = null,
+        @Query('limit') limit: string = null,
+        @Query('type') type: DomainEventType = null,
+        @Query('searchQuery') searchQuery: string = null,
+        @Query('searchProperty') searchProperty: string = null,
+        @Query('status') status: DomainEventStatus = null,
+        @Query('orderField') orderField: string = null,
+        @Query('orderDirection') orderDirection: string = null,
+    ): Promise<DomainEvent[]> {
+        return this.domainEventsService.findBy({
+            offset,
+            limit,
+            type,
+            searchQuery,
+            searchProperty,
+            status,
+            orderField,
+            orderDirection,
+        });
+    }
 
     @Get('/publisher/:publisherId/totals')
     getTotals(@Param('publisherId') id: string): Promise<PublisherTotalsDto> {
@@ -99,14 +124,22 @@ export class DomainEventsController {
             .then((result) => result[0].average ?? 0);
     }
 
+    @Get('/times')
     times(
         @Query('from') from: string | null,
         @Query('to') to: string | null,
     ): Promise<number[]> {
         return this.domainEventsService
             .getExecutionTimes(from, to)
-            .then((result) =>
-                result.map((event: DomainEvent) => event.executionTime),
-            );
+            .then((result) => result.map((time) => time.time));
+    }
+
+    @Get('/counts')
+    counts(
+        @Query('from') from: string | null,
+        @Query('to') to: string | null,
+        @Query('type') type: string | null,
+    ): Promise<DayCount[]> {
+        return this.domainEventsService.getCounts(from, to, type);
     }
 }
