@@ -22,6 +22,8 @@ export interface Filters {
     status: string | null;
     orderField: string | null;
     orderDirection: string | null;
+    dateFrom: string | null;
+    dateTo: string | null;
 }
 
 @Injectable()
@@ -41,33 +43,92 @@ export class DomainEventsService {
             .aggregate([
                 {
                     $match: {
-                        ...(filters.searchProperty !== 'null' &&
-                        filters.searchQuery !== 'null'
-                            ? {
-                                  [filters.searchProperty]: filters.searchQuery,
-                              }
-                            : {}),
-                        ...(filters.status !== 'null' && {
+                        ...(filters.searchQuery && {
+                            payloadString: {
+                                $regex: filters.searchQuery,
+                                $options: 'i',
+                            },
+                        }),
+                        ...(filters.status && {
                             status: filters.status,
                         }),
-                        ...(filters.type !== 'null' && { type: filters.type }),
+                        ...(filters.type && { type: filters.type }),
+                        ...(filters.dateFrom || filters.dateTo
+                            ? {
+                                  createdAt: {
+                                      ...(filters.dateFrom && {
+                                          $gte: new Date(filters.dateFrom),
+                                      }),
+                                      ...(filters.dateTo && {
+                                          $lte: new Date(filters.dateTo),
+                                      }),
+                                  },
+                              }
+                            : {}),
                     },
                 },
-                ...(filters.orderField !== 'null'
+                ...(filters.orderField
                     ? [
                           {
                               $sort: {
                                   [filters.orderField]:
-                                      parseInt(filters.orderDirection) || -1,
+                                      parseInt(filters.orderDirection) || 1,
                               },
                           },
                       ]
-                    : []),
+                    : [
+                          {
+                              $sort: {
+                                  createdAt: -1,
+                              },
+                          },
+                      ]),
                 {
                     $skip: parseInt(filters.offset) || 0,
                 },
                 {
                     $limit: parseInt(filters.limit) || 10,
+                },
+            ])
+            .exec();
+    }
+
+    async findByCount(filters: Filters): Promise<number> {
+        return this.domainEventModel
+            .aggregate([
+                {
+                    $match: {
+                        ...(filters.searchQuery && {
+                            payloadString: {
+                                $regex: filters.searchQuery,
+                                $options: 'i',
+                            },
+                        }),
+                        ...(filters.status && {
+                            status: filters.status,
+                        }),
+                        ...(filters.type && { type: filters.type }),
+                        ...(filters.dateFrom || filters.dateTo
+                            ? {
+                                  createdAt: {
+                                      ...(filters.dateFrom && {
+                                          $gte: new Date(filters.dateFrom),
+                                      }),
+                                      ...(filters.dateTo && {
+                                          $lte: new Date(filters.dateTo),
+                                      }),
+                                  },
+                              }
+                            : {}),
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        count: {
+                            $sum: 1,
+                        },
+                    },
                 },
             ])
             .exec();

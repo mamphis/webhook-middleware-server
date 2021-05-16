@@ -37,6 +37,8 @@ export class DomainEventsController {
         @Query('status') status: string = null,
         @Query('orderField') orderField: string = null,
         @Query('orderDirection') orderDirection: string = null,
+        @Query('dateFrom') dateFrom: string = null,
+        @Query('dateTo') dateTo: string = null,
     ): Promise<DomainEvent[]> {
         return this.domainEventsService.findBy({
             offset,
@@ -47,7 +49,34 @@ export class DomainEventsController {
             status,
             orderField,
             orderDirection,
+            dateFrom,
+            dateTo,
         });
+    }
+
+    @Get('/count')
+    getCount(
+        @Query('type') _type: string = null,
+        @Query('searchQuery') _searchQuery: string = null,
+        @Query('searchProperty') _searchProperty: string = null,
+        @Query('status') _status: string = null,
+        @Query('dateFrom') _dateFrom: string = null,
+        @Query('dateTo') _dateTo: string = null,
+    ): Promise<number> {
+        return this.domainEventsService
+            .findByCount({
+                offset: null,
+                limit: null,
+                type: _type,
+                searchQuery: _searchQuery,
+                searchProperty: _searchProperty,
+                status: _status,
+                orderField: null,
+                orderDirection: null,
+                dateFrom: _dateFrom,
+                dateTo: _dateTo,
+            })
+            .then((result) => (result ? result[0].count : 0));
     }
 
     @Get('/publisher/:publisherId/totals')
@@ -119,7 +148,7 @@ export class DomainEventsController {
     averageTime(): Promise<number> {
         return this.domainEventsService
             .getAverageExecutionTime()
-            .then((result) => result[0].average ?? 0);
+            .then((result) => result[0].average || 0);
     }
 
     @Get('/times')

@@ -36,6 +36,7 @@ export class DomainEvent {
         this.type = type;
         this.status = status;
         this.payload = payload;
+        this.payloadString = JSON.stringify(payload);
         this.publisherId = publisherId;
         this.subscriberId = subscriberId;
         this.metadata = metadata;
@@ -53,6 +54,9 @@ export class DomainEvent {
 
     @Prop({ required: true, type: Schema.Types.Mixed })
     payload: unknown;
+
+    @Prop({ required: true })
+    payloadString: string;
 
     @Prop({ required: false })
     publisherId: string | null;
