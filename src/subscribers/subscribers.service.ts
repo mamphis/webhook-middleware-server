@@ -18,6 +18,7 @@ import { SubscriberDto } from './dto/subscriber.dto';
 import { Subscriber, SubscriberDocument } from './schemas/subscriber.schema';
 import fetch from 'node-fetch';
 import { NotFoundException } from '@nestjs/common';
+import type { UpdateQuery } from 'mongoose';
 
 @Injectable()
 export class SubscribersService {
@@ -52,17 +53,18 @@ export class SubscribersService {
         return subscriber;
     }
 
-    // async update(
-    //     id: string,
-    //     subscriberDto: SubscriberDto,
-    // ): Promise<Subscriber> {
-    //     console.log(subscriberDto);
-    //     return this.subscriberModel
-    //         .findByIdAndUpdate(id, subscriberDto, {
-    //             useFindAndModify: true,
-    //         })
-    //         .then((result) => <Subscriber>result);
-    // }
+    async update(
+        id: string,
+        subscriberDto: SubscriberDto,
+    ): Promise<Subscriber> {
+        const query = subscriberDto as UpdateQuery<SubscriberDocument>;
+        return this.subscriberModel
+            .findByIdAndUpdate(id, query, {
+                useFindAndModify: true,
+                new: true,
+            })
+            .then((result) => <Subscriber>result);
+    }
 
     async delete(id: string): Promise<void> {
         this.subscriberModel

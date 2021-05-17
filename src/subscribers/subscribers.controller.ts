@@ -8,6 +8,7 @@ import {
     NotFoundException,
     Param,
     Post,
+    Put,
     Query,
     UseGuards,
 } from '@nestjs/common';
@@ -48,13 +49,13 @@ export class SubscribersController {
         return this.subscribersService.getById(id);
     }
 
-    // @Put(':id')
-    // update(
-    //     @Param('id') id: string,
-    //     @Body() subscriberDto: SubscriberDto,
-    // ): Promise<Subscriber> {
-    //     return this.subscribersService.update(id, subscriberDto);
-    // }
+    @Put(':id')
+    update(
+        @Param('id') id: string,
+        @Body() subscriberDto: SubscriberDto,
+    ): Promise<Subscriber> {
+        return this.subscribersService.update(id, subscriberDto);
+    }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
