@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MapperDto } from './dto/mapper.dto';
@@ -29,9 +29,6 @@ export class MappersService {
         const mapper: Mapper | null = await this.mapperModel
             .findById(id)
             .exec();
-        if (!mapper) {
-            throw new NotFoundException();
-        }
         return mapper;
     }
 

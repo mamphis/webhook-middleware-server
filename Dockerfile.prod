@@ -10,4 +10,4 @@ RUN yarn install
 
 RUN yarn build
 
-ENTRYPOINT [ "yarn", "start:prod" ]
+ENTRYPOINT [ "node", "dist/main.js" ]

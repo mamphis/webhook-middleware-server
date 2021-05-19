@@ -76,7 +76,7 @@ export class DomainEventsController {
                 dateFrom: _dateFrom,
                 dateTo: _dateTo,
             })
-            .then((result) => (result ? result[0].count : 0));
+            .then((result) => (result[0] ? result[0].count : 0));
     }
 
     @Get('/publisher/:publisherId/totals')
@@ -148,7 +148,7 @@ export class DomainEventsController {
     averageTime(): Promise<number> {
         return this.domainEventsService
             .getAverageExecutionTime()
-            .then((result) => result[0].average || 0);
+            .then((result) => result[0] ? result[0].average : 0);
     }
 
     @Get('/times')

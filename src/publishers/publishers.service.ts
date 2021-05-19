@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PublisherDto } from './dto/publisher.dto';
@@ -29,7 +29,7 @@ export class PublishersService {
             .findById(id)
             .exec();
         if (!publisher) {
-            throw new NotFoundException();
+            return null;
         }
         return publisher;
     }

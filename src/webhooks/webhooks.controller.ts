@@ -34,7 +34,7 @@ export class WebhooksController {
     ): Promise<void> {
         if (
             !Types.ObjectId.isValid(publisherId) ||
-            !this.publishersService.getById(publisherId)
+            !await this.publishersService.getById(publisherId)
         ) {
             throw new NotFoundException();
         }
