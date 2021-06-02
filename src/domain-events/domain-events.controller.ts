@@ -10,7 +10,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { SubscribersService } from 'src/subscribers/subscribers.service';
+import { SubscribersService } from '../subscribers/subscribers.service';
 import { DomainEventsService } from './domain-events.service';
 import { PublisherTotalsDto } from './dto/publisher-totals.dto';
 import {
@@ -55,7 +55,7 @@ export class DomainEventsController {
     }
 
     @Get('/count')
-    getCount(
+    async getCount(
         @Query('type') _type: string = null,
         @Query('searchQuery') _searchQuery: string = null,
         @Query('searchProperty') _searchProperty: string = null,
@@ -63,20 +63,22 @@ export class DomainEventsController {
         @Query('dateFrom') _dateFrom: string = null,
         @Query('dateTo') _dateTo: string = null,
     ): Promise<number> {
-        return this.domainEventsService
-            .findByCount({
-                offset: null,
-                limit: null,
-                type: _type,
-                searchQuery: _searchQuery,
-                searchProperty: _searchProperty,
-                status: _status,
-                orderField: null,
-                orderDirection: null,
-                dateFrom: _dateFrom,
-                dateTo: _dateTo,
-            })
-            .then((result) => (result[0] ? result[0].count : 0));
+        const result = await this.domainEventsService.findByCount({
+            offset: null,
+            limit: null,
+            type: _type,
+            searchQuery: _searchQuery,
+            searchProperty: _searchProperty,
+            status: _status,
+            orderField: null,
+            orderDirection: null,
+            dateFrom: _dateFrom,
+            dateTo: _dateTo,
+        });
+        if (result) {
+            return result[0] ? result[0].count : null;
+        }
+        return null;
     }
 
     @Get('/publisher/:publisherId/totals')
@@ -108,31 +110,29 @@ export class DomainEventsController {
     }
 
     @Post('/retry/:domainEventId')
-    resendWebhook(@Param('domainEventId') id: string): Promise<DomainEvent> {
+    async resendWebhook(
+        @Param('domainEventId') id: string,
+    ): Promise<DomainEvent> {
         if (!Types.ObjectId.isValid(id)) {
             throw new NotFoundException();
         }
-        return this.domainEventsService
-            .getById(id)
-            .then(async (domainEvent: DomainEventDocument) => {
-                const prevEvent = domainEvent.prevEvent;
-                const splitId = (<DomainEventDocument>prevEvent)._id
-                    .toString()
-                    .split('_');
-                const newId = splitId[0].concat(
-                    splitId.length > 1
-                        ? '_'.concat((parseInt(splitId[1]) + 1).toString())
-                        : '_1',
-                );
-                (<DomainEventDocument>prevEvent)._id = newId;
-                this.subscribersService.notifySubscriber(
-                    prevEvent,
-                    await this.subscribersService.getById(
-                        domainEvent.subscriberId,
-                    ),
-                );
-                return this.domainEventsService.getByPrevEventId(newId);
-            });
+        const domainEvent = await this.domainEventsService.getById(id);
+
+        const prevEvent = domainEvent.prevEvent;
+        const splitId = (<DomainEventDocument>prevEvent)._id
+            .toString()
+            .split('_');
+        const newId = splitId[0].concat(
+            splitId.length > 1
+                ? '_'.concat((parseInt(splitId[1]) + 1).toString())
+                : '_1',
+        );
+        (<DomainEventDocument>prevEvent)._id = newId;
+        this.subscribersService.notifySubscriber(
+            prevEvent,
+            await this.subscribersService.getById(domainEvent.subscriberId),
+        );
+        return this.domainEventsService.getByPrevEventId(newId);
     }
 
     @Get('/count')
@@ -145,20 +145,24 @@ export class DomainEventsController {
     }
 
     @Get('/average-time')
-    averageTime(): Promise<number> {
-        return this.domainEventsService
-            .getAverageExecutionTime()
-            .then((result) => result[0] ? result[0].average : 0);
+    async averageTime(): Promise<number> {
+        const result = await this.domainEventsService.getAverageExecutionTime();
+        if (result) {
+            return result[0] ? result[0].average : 0;
+        }
+        return 0;
     }
 
     @Get('/times')
-    times(
+    async times(
         @Query('from') from: string | null,
         @Query('to') to: string | null,
     ): Promise<number[]> {
-        return this.domainEventsService
-            .getExecutionTimes(from, to)
-            .then((result) => result.map((time) => time.time));
+        const result = await this.domainEventsService.getExecutionTimes(
+            from,
+            to,
+        );
+        return result ? result.map((time) => time.time) : [];
     }
 
     @Get('/counts')

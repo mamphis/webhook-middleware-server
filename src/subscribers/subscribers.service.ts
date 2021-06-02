@@ -54,12 +54,10 @@ export class SubscribersService {
         subscriberDto: SubscriberDto,
     ): Promise<Subscriber> {
         const query = subscriberDto as UpdateQuery<SubscriberDocument>;
-        return this.subscriberModel
-            .findByIdAndUpdate(id, query, {
-                useFindAndModify: true,
-                new: true,
-            })
-            .then((result) => <Subscriber>result);
+        return await this.subscriberModel.findByIdAndUpdate(id, query, {
+            useFindAndModify: true,
+            new: true,
+        });
     }
 
     async delete(id: string): Promise<void> {
@@ -75,33 +73,31 @@ export class SubscribersService {
     }
 
     async removeAllSubscriptionsWithMapper(mapperId: string): Promise<void> {
-        return this.subscriberModel
-            .find({ 'subscribedTo.mapperId': mapperId })
-            .then((subscribers: SubscriberDocument[]) => {
-                subscribers.forEach((subscriber: SubscriberDocument) => {
-                    subscriber.subscribedTo = subscriber.subscribedTo.filter(
-                        (subscriberPublisher) =>
-                            subscriberPublisher.mapperId !== mapperId,
-                    );
-                    subscriber.save();
-                });
-            });
+        const subscribers = await this.subscriberModel.find({
+            'subscribedTo.mapperId': mapperId,
+        });
+        subscribers.forEach((subscriber: SubscriberDocument) => {
+            subscriber.subscribedTo = subscriber.subscribedTo.filter(
+                (subscriberPublisher) =>
+                    subscriberPublisher.mapperId !== mapperId,
+            );
+            subscriber.save();
+        });
     }
 
     async removeAllSubscriptionsWithPublisher(
         publisherId: string,
     ): Promise<void> {
-        return this.subscriberModel
-            .find({ 'subscribedTo.publisherId': publisherId })
-            .then((subscribers: SubscriberDocument[]) => {
-                subscribers.forEach((subscriber: SubscriberDocument) => {
-                    subscriber.subscribedTo = subscriber.subscribedTo.filter(
-                        (subscriberPublisher) =>
-                            subscriberPublisher.publisherId !== publisherId,
-                    );
-                    subscriber.save();
-                });
-            });
+        const subscribers = await this.subscriberModel.find({
+            'subscribedTo.publisherId': publisherId,
+        });
+        subscribers.forEach((subscriber: SubscriberDocument) => {
+            subscriber.subscribedTo = subscriber.subscribedTo.filter(
+                (subscriberPublisher) =>
+                    subscriberPublisher.publisherId !== publisherId,
+            );
+            subscriber.save();
+        });
     }
 
     async sendWebhook(

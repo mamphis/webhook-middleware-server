@@ -6,7 +6,20 @@ describe('UsersService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [UsersService],
+            providers: [
+                {
+                    provide: UsersService,
+                    useValue: {
+                        create: jest.fn(
+                            (_username: string, _psw: string) => ({}),
+                        ),
+                        createUser: jest.fn(
+                            (username: string, password: string) =>
+                                service.create(username, password),
+                        ),
+                    },
+                },
+            ],
         }).compile();
 
         service = module.get<UsersService>(UsersService);
@@ -14,5 +27,11 @@ describe('UsersService', () => {
 
     it('should be defined', () => {
         expect(service).toBeDefined();
+    });
+
+    it('should create a user', async () => {
+        const spyOn = jest.spyOn(service, 'create');
+        await service.createUser('new', 'user');
+        expect(spyOn).toBeCalledTimes(1);
     });
 });

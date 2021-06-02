@@ -4,11 +4,12 @@ import { SubscribersService } from '../subscribers/subscribers.service';
 import { MapperDto } from './dto/mapper.dto';
 import { MappersController } from './mappers.controller';
 import { MappersService } from './mappers.service';
+import jsonpathObjectTransform from 'jsonpath-object-transform';
 
-describe('Publishers Controller', () => {
+describe('Mappers Controller', () => {
     let mappersController: MappersController;
-    let mappersService: MappersService;
     let subscribersService: SubscribersService;
+    let mappersService: MappersService;
 
     const date = new Date();
 
@@ -29,7 +30,9 @@ describe('Publishers Controller', () => {
                         getById: jest.fn(),
                         update: jest.fn(),
                         delete: jest.fn(),
-                        mapPayloadToFormat: jest.fn(),
+                        mapPayloadToFormat: jest.fn((input: any, format: any) =>
+                            jsonpathObjectTransform(input, format),
+                        ),
                     },
                 },
                 {
@@ -51,13 +54,44 @@ describe('Publishers Controller', () => {
         expect(spyOn).toBeCalledTimes(1);
     });
 
-    it('should get all Publishers', async () => {
+    it('should edit a Mapper', async () => {
+        const spyOn = jest.spyOn(mappersService, 'update');
+        await mappersController.update('1', {
+            name: 'updated',
+            format: {
+                data: '',
+            },
+            sample: {
+                test: '',
+            },
+        });
+        expect(spyOn).toBeCalledTimes(1);
+    });
+
+    it('should delete a Mapper', async () => {
+        const spyOn = jest.spyOn(mappersService, 'delete');
+        const spyOn2 = jest.spyOn(
+            subscribersService,
+            'removeAllSubscriptionsWithMapper',
+        );
+        mappersController.delete('605f1bb2650c2d4d134d04c2');
+        expect(spyOn).toBeCalledTimes(1);
+        expect(spyOn2).toBeCalledTimes(1);
+    });
+
+    it('should fetch all Mappers', async () => {
         const spyOn = jest.spyOn(mappersService, 'findAll');
         await mappersController.findAll();
         expect(spyOn).toBeCalledTimes(1);
     });
 
-    it('should get a Publisher', async () => {
+    it('should fetch a Mapper by id', async () => {
+        const spyOn = jest.spyOn(mappersService, 'getById');
+        await mappersController.findById('605f1bb2650c2d4d134d04c2');
+        expect(spyOn).toBeCalledTimes(1);
+    });
+
+    it('should return 404 when getting a Mapper by incorrect id', async () => {
         const spyOn = jest.spyOn(mappersService, 'getById');
         try {
             await mappersController.findById('invalid');
@@ -65,31 +99,15 @@ describe('Publishers Controller', () => {
             expect(e).toBeInstanceOf(NotFoundException);
             expect(spyOn).toBeCalledTimes(0);
         }
-        await mappersController.findById('605f1bb2650c2d4d134d04c2');
-        expect(spyOn).toBeCalledTimes(1);
     });
 
-    it('should update a Publisher', async () => {
-        const spyOn = jest.spyOn(mappersService, 'update');
-        await mappersController.update('publisherId', {
-            name: '',
-            format: {},
-            sample: {},
-        });
-        expect(spyOn).toBeCalledTimes(1);
-    });
-
-    it('should delete a Publisher', async () => {
-        const spyOnDelete = jest.spyOn(mappersService, 'delete');
-        const spyOnRemoveSubscriptions = jest.spyOn(
-            subscribersService,
-            'removeAllSubscriptionsWithMapper',
+    it('should transform a webhook', async () => {
+        const result = mappersService.mapPayloadToFormat(
+            { default: 'value' },
+            { new: '$.default' },
         );
-        await mappersController.delete('invalid');
-        expect(spyOnRemoveSubscriptions).toBeCalledTimes(0);
-        expect(spyOnDelete).toBeCalledTimes(0);
-        await mappersController.delete('605f1bb2650c2d4d134d04c2');
-        expect(spyOnDelete).toBeCalledTimes(1);
-        expect(spyOnRemoveSubscriptions).toBeCalledTimes(1);
+        expect(result).toMatchObject({
+            new: 'value',
+        });
     });
 });

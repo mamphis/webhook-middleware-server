@@ -12,8 +12,9 @@ import { UsersService } from './users.service';
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (config: ConfigService) => {
+                console.log(config.get('DATABASE_URL'));
                 return {
-                    uri: config.get('DATABASE_URL'),
+                    uri: 'mongodb://root:root@mongo:27017/admin',
                 };
             },
             inject: [ConfigService],
