@@ -3,6 +3,7 @@ build:
     coverage:
       tests:
         override:
+          - js-scrutinizer-run
           - command: 'yarn jest --coverage'
             coverage:
               file: 'coverage/clover.xml'
