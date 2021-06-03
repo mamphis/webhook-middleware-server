@@ -25,6 +25,10 @@ To fully setup the system, you must meet these requirements:
   * DATABASE_URL - used to access the mongoDB database
   * JWT_SECRET - unique secret key to sign JWT tokens
 
+After setting up the system, admin user can be created with a console command executed inside **webhook-middleware-server**:
+
+```$ yarn console create-user <username> <password>```
+
 
 ## Support
 
