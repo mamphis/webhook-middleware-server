@@ -1,10 +1,12 @@
 version: '3.7'
 
 services:
-    app:
+    server:
         image: node:latest
         entrypoint: 'tail -f /dev/null'
         working_dir: /app
+        environment:
+            DATABASE_URL: mongodb://root:root@mongo:27017/admin
         volumes:
             - ./:/app:rw,cached
         networks:

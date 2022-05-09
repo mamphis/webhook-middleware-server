@@ -43,6 +43,11 @@ export class MappersController {
         return this.mappersService.findAll(offset, limit);
     }
 
+    @Get('/count')
+    count(): Promise<number> {
+        return this.mappersService.count();
+    }
+
     @Post()
     async create(@Body() mapperDto: MapperDto): Promise<Mapper> {
         return this.mappersService.create(mapperDto);

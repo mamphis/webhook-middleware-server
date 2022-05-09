@@ -32,9 +32,10 @@ export class WebhooksController {
         @Param('publisherId') publisherId: string,
         @Body() webhookPayload: any,
     ): Promise<void> {
+        console.log(webhookPayload);
         if (
             !Types.ObjectId.isValid(publisherId) ||
-            !await this.publishersService.getById(publisherId)
+            !(await this.publishersService.getById(publisherId))
         ) {
             throw new NotFoundException();
         }

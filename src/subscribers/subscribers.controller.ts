@@ -41,6 +41,11 @@ export class SubscribersController {
         return this.subscribersService.create(subscriberDto);
     }
 
+    @Get('/count')
+    count(): Promise<number> {
+        return this.subscribersService.count();
+    }
+
     @Get(':id')
     async findById(@Param('id') id: string): Promise<Subscriber> {
         if (!Types.ObjectId.isValid(id)) {

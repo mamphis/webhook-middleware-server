@@ -68,6 +68,10 @@ export class SubscribersService {
             .exec();
     }
 
+    async count(): Promise<number> {
+        return this.subscriberModel.countDocuments();
+    }
+
     async findAllByPublisherId(id: string): Promise<SubscriberDocument[]> {
         return this.subscriberModel.find({ 'subscribedTo.publisherId': id });
     }

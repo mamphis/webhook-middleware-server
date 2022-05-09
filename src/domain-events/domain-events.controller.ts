@@ -60,8 +60,8 @@ export class DomainEventsController {
         @Query('searchQuery') _searchQuery: string = null,
         @Query('searchProperty') _searchProperty: string = null,
         @Query('status') _status: string = null,
-        @Query('dateFrom') _dateFrom: string = null,
-        @Query('dateTo') _dateTo: string = null,
+        @Query('from') _dateFrom: string = null,
+        @Query('to') _dateTo: string = null,
     ): Promise<number> {
         const result = await this.domainEventsService.findByCount({
             offset: null,
@@ -76,7 +76,7 @@ export class DomainEventsController {
             dateTo: _dateTo,
         });
         if (result) {
-            return result[0] ? result[0].count : null;
+            return result[0] ? result[0].count : 0;
         }
         return null;
     }

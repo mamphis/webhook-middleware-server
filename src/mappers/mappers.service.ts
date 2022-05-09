@@ -17,6 +17,10 @@ export class MappersService {
         return mapper.save();
     }
 
+    async count(): Promise<number> {
+        return this.mapperModel.countDocuments();
+    }
+
     async findAll(offset: string, limit: string): Promise<Mapper[]> {
         return this.mapperModel
             .find()
